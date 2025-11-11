@@ -153,12 +153,9 @@ endif()  # BUILD_SHARED_LIBS
 foreach(lib ${BROTLI_SHARED_LIBRARIES} ${BROTLI_STATIC_LIBRARIES})
   target_link_libraries(${lib} ${LIBM_LIBRARY})
   set_property(TARGET ${lib} APPEND PROPERTY INCLUDE_DIRECTORIES ${BROTLI_INCLUDE_DIRS})
-  # For Android, use unversioned SONAME
-  if (ANDROID OR CMAKE_SYSTEM_NAME MATCHES "Android")
-    set_target_properties(${lib} PROPERTIES
-      VERSION "${BROTLI_ABI_COMPATIBILITY}.${BROTLI_ABI_AGE}.${BROTLI_ABI_REVISION}"
-      SOVERSION "")
-  else()
+  # For Android, use unversioned SONAME by not setting VERSION/SOVERSION at all
+  # Detect Android by checking if compiler contains "android"
+  if (NOT (ANDROID OR CMAKE_SYSTEM_NAME MATCHES "Android" OR CMAKE_C_COMPILER MATCHES "android"))
     set_target_properties(${lib} PROPERTIES
       VERSION "${BROTLI_ABI_COMPATIBILITY}.${BROTLI_ABI_AGE}.${BROTLI_ABI_REVISION}"
       SOVERSION "${BROTLI_ABI_COMPATIBILITY}")
